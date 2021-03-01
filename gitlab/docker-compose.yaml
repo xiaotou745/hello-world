@@ -1,0 +1,29 @@
+version: "3"
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:13.9.0-ce.0
+    restart: unless-stopped
+    hostname: gitlab.wychuan.com
+    container_name: devops-gitlab
+    ports:
+      - '80:80'
+      - '2443:443'
+      - '2222:22'
+    privileged: true
+    environment:
+      TZ: 'Asia/Shanghai'
+      GITLAB_OMNIBUS_CONFIG: |
+        gitlab_rails['time_zone'] = 'Asia/Shanghai'
+        external_url "http://54.251.200.99" #http地址
+        gitlab_rails["gitlab_ssh_host"] = "http://54.251.200.99"
+        gitlab_rails['gitlab_shell_ssh_port'] = 8022 #ssh地址端口
+        nginx["listen_port"] = 80
+    volumes:
+      - ./config:/etc/gitlab
+      - ./logs:/var/log/gitlab
+      - ./data:/var/opt/gitlab
+
+networks:
+  default:
+    external:
+      name: devops-network
